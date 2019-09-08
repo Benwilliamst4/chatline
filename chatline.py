@@ -16,9 +16,6 @@ import time
 
 class ThreadController:
 
-    client = False
-    server = False
-
     def __init__(self, ip):
         self.is_valid_ipv4(ip)
         self.start_threads()
@@ -28,32 +25,24 @@ class ThreadController:
         socket.inet_pton(socket.AF_INET, self.ip)
 
     def start_threads(self):
-        t1 = ClientServerThread(target = init_client_thread, args =(lambda : self.client, self.ip)) 
+        threads = []
+        t1 = threading.Thread(name='client', target = init_client_thread) 
         t1.start() 
-        t2 = ClientServerThread(target = init_server_thread, args =(lambda : self.server, self.ip)) 
+        threads.append(t1)
+        t2 = threading.Thread(name='server', target = init_server_thread) 
         t2.start() 
-        while (True):
-            if self.client:
-                print('Client Wins')
-                return
-            if self.server:
-                print('Server Wins')
-                return
+        threads.append(t2)
+        for i in threads:
+            print(i)
 
+def init_client_thread():
+    print('client')
+    pass
 
-class ClientServerThread(threading.Thread):
-    """Thread class with a stop() method. The thread itself has to check
-    regularly for the stopped() condition."""
+def init_server_thread():
+    print('server')
+    pass
 
-    def __init__(self):
-        super(ClientServerThread, self).__init__()
-        self._stop_event = threading.Event()
-
-    def stop(self):
-        self._stop_event.set()
-
-    def stopped(self):
-        return self._stop_event.is_set()
 
 if __name__ == '__main__':
     controller_singleton = ThreadController(sys.argv[1])
