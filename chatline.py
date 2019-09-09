@@ -14,7 +14,10 @@ import socket
 import sys
 import time
 
-class ThreadController:
+claimed_client = False
+claimed_server = False
+
+class ThreadStarter:
 
     def __init__(self, ip):
         self.is_valid_ipv4(ip)
@@ -26,23 +29,44 @@ class ThreadController:
 
     def start_threads(self):
         threads = []
-        t1 = threading.Thread(name='client', target = init_client_thread) 
+        t1 = threading.Thread(name='client', target = init_client_thread), args=(self.ip,)) 
         t1.start() 
         threads.append(t1)
-        t2 = threading.Thread(name='server', target = init_server_thread) 
+        t2 = threading.Thread(name='server', target = init_server_thread, arg-=(self.ip,)) 
         t2.start() 
         threads.append(t2)
         for i in threads:
             print(i)
 
+class ServerSocket():
+
+    def __init__(self, ip):
+        pass
+
+
+class ClientSocket()
+
+    def __init__(self, ip):
+        pass
+
+
 def init_client_thread():
+    global claimed_server
+    global claimed_client
+    while (not claimed_server):
+        time.sleep(1)
     print('client')
     pass
 
 def init_server_thread():
+    global claimed_client
+    global claimed_server
+    while (not claimed_client):
+        time.sleep(1)
+        claimed_server = True
     print('server')
     pass
 
 
 if __name__ == '__main__':
-    controller_singleton = ThreadController(sys.argv[1])
+    controller_singleton = ThreadStarter(sys.argv[1])
