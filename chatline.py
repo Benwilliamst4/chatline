@@ -29,44 +29,44 @@ class ThreadStarter:
 
     def start_threads(self):
         threads = []
-        t1 = threading.Thread(name='client', target = init_client_thread), args=(self.ip,)) 
+        t1 = threading.Thread(name='client', target = init_client_thread, args=(self.ip,)) 
         t1.start() 
         threads.append(t1)
-        t2 = threading.Thread(name='server', target = init_server_thread, arg-=(self.ip,)) 
+        t2 = threading.Thread(name='server', target = init_server_thread, args=(self.ip,)) 
         t2.start() 
         threads.append(t2)
         for i in threads:
             print(i)
 
-class ServerSocket():
 
-    def __init__(self, ip):
-        pass
-
-
-class ClientSocket()
-
-    def __init__(self, ip):
-        pass
-
-
-def init_client_thread():
+def init_client_thread(ip):
     global claimed_server
     global claimed_client
+    client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     while (not claimed_server):
-        time.sleep(1)
+        try:
+            client.connect((ip, 8080))
+            claimed_client = True
+        except:
+            pass
+
     print('client')
     pass
 
-def init_server_thread():
+def init_server_thread(ip):
     global claimed_client
     global claimed_server
+    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server.bind(('127.0.0.1', 8080))
     while (not claimed_client):
-        time.sleep(1)
-        claimed_server = True
+        try:
+            server.accept()
+            claimed_server = True
+        except:
+            pass
     print('server')
     pass
 
 
 if __name__ == '__main__':
-    controller_singleton = ThreadStarter(sys.argv[1])
+    controller_singleton = ThreadStarter('127.0.0.1')
