@@ -14,59 +14,34 @@ import socket
 import sys
 import time
 
-claimed_client = False
-claimed_server = False
-
-class ThreadStarter:
+class Client:
+    PORT = 8080
 
     def __init__(self, ip):
-        self.is_valid_ipv4(ip)
-        self.start_threads()
-    
-    def is_valid_ipv4(self, ip):
-        self.ip = ip
-        socket.inet_pton(socket.AF_INET, self.ip)
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.sock.connect((ip, self.PORT))
+        self.sock.sendall(bytes(input('enter sheet: '), 'utf-8'))
+        x = self.sock.recv(420)
+        print(x)
+        
 
-    def start_threads(self):
-        threads = []
-        t1 = threading.Thread(name='client', target = init_client_thread, args=(self.ip,)) 
-        t1.start() 
-        threads.append(t1)
-        t2 = threading.Thread(name='server', target = init_server_thread, args=(self.ip,)) 
-        t2.start() 
-        threads.append(t2)
-        for i in threads:
-            print(i)
+class Server:
+    PORT = 8080
+    HOST = '127.0.0.1'
 
-
-def init_client_thread(ip):
-    global claimed_server
-    global claimed_client
-    client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    while (not claimed_server):
-        try:
-            client.connect((ip, 8080))
-            claimed_client = True
-        except:
-            pass
-
-    print('client')
-    pass
-
-def init_server_thread(ip):
-    global claimed_client
-    global claimed_server
-    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    server.bind(('127.0.0.1', 8080))
-    while (not claimed_client):
-        try:
-            server.accept()
-            claimed_server = True
-        except:
-            pass
-    print('server')
-    pass
+    def __init__(self, ip):
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.sock.bind((self.HOST, self.PORT))
+        self.sock.listen(1)
+        conn, ip = self.sock.accept()
+        with conn:
+            string = conn.recv(420)
+            print(string)
+            conn.sendall(bytes(input('enter sheet: '), 'utf-8'))
 
 
 if __name__ == '__main__':
-    controller_singleton = ThreadStarter('127.0.0.1')
+    if sys.argv[1] == 'client':
+        x = Client('127.0.0.1')
+    else:
+        x = Server('127.0.0.1')
